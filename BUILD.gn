@@ -499,13 +499,13 @@ optional("fontmgr_win_factory") {
   sources = [ "src/ports/SkFontMgr_win_dw_factory.cpp" ]
 }
 
-optional("fontmgr_win_gdi") {
-  enabled = skia_enable_fontmgr_win_gdi
+# optional("fontmgr_win_gdi") {
+#   enabled = skia_enable_fontmgr_win_gdi
 
-  public = [ "include/ports/SkTypeface_win.h" ]
-  sources = [ "src/ports/SkFontHost_win.cpp" ]
-  libs = [ "Gdi32.lib" ]
-}
+# public = [ "include/ports/SkTypeface_win.h" ]
+#  sources = [ "src/ports/SkFontHost_win.cpp" ]
+#  libs = [ "Gdi32.lib" ]
+# }
 
 if (skia_lex) {
   executable("sksllex") {
@@ -735,6 +735,31 @@ optional("gpu") {
 
   libs = []
   frameworks = []
+  if (is_android) {
+    sources += [ "src/gpu/gl/egl/GrGLMakeNativeInterface_egl.cpp" ]
+
+    # this lib is required to link against AHardwareBuffer
+    if (defined(ndk_api) && ndk_api >= 26) {
+      libs += [ "android" ]
+    }
+  } else if (skia_use_egl) {
+    sources += [ "src/gpu/gl/egl/GrGLMakeNativeInterface_egl.cpp" ]
+    libs += [ "EGL" ]
+  } else if (is_linux && skia_use_x11) {
+    sources += [ "src/gpu/gl/glx/GrGLMakeNativeInterface_glx.cpp" ]
+    libs += [ "GL" ]
+  } else if (is_mac) {
+    sources += [ "src/gpu/gl/mac/GrGLMakeNativeInterface_mac.cpp" ]
+  } else if (is_ios) {
+    sources += [ "src/gpu/gl/iOS/GrGLMakeNativeInterface_iOS.cpp" ]
+  # } else if (is_win) {
+  #   sources += [ "src/gpu/gl/win/GrGLMakeNativeInterface_win.cpp" ]
+  #   if (target_cpu != "arm64") {
+  #     libs += [ "OpenGL32.lib" ]
+  #   }
+  # } else {
+  #   sources += [ "src/gpu/gl/GrGLMakeNativeInterface_none.cpp" ]
+  }
 
   if (skia_use_gl) {
     public_defines += [ "SK_GL" ]
@@ -757,11 +782,11 @@ optional("gpu") {
       sources += [ "src/gpu/gl/mac/GrGLMakeNativeInterface_mac.cpp" ]
     } else if (is_ios) {
       sources += [ "src/gpu/gl/iOS/GrGLMakeNativeInterface_iOS.cpp" ]
-    } else if (is_win) {
-      sources += [ "src/gpu/gl/win/GrGLMakeNativeInterface_win.cpp" ]
-      if (target_cpu != "arm64") {
-        libs += [ "OpenGL32.lib" ]
-      }
+    # } else if (is_win) {
+    #   sources += [ "src/gpu/gl/win/GrGLMakeNativeInterface_win.cpp" ]
+    #   if (target_cpu != "arm64") {
+    #     libs += [ "OpenGL32.lib" ]
+    #   }
     } else {
       sources += [ "src/gpu/gl/GrGLMakeNativeInterface_none.cpp" ]
     }
@@ -1087,7 +1112,7 @@ component("skia") {
     ":fontmgr_fuchsia",
     ":fontmgr_mac_ct",
     ":fontmgr_win",
-    ":fontmgr_win_gdi",
+    #":fontmgr_win_gdi",
     ":gpu",
     ":pdf",
     ":skcms",
@@ -1186,11 +1211,11 @@ component("skia") {
       "src/ports/SkOSLibrary_win.cpp",
     ]
     libs += [
-      "FontSub.lib",
+      #"FontSub.lib",
       "Ole32.lib",
       "OleAut32.lib",
-      "User32.lib",
-      "Usp10.lib",
+      #"User32.lib",
+      #"Usp10.lib",
     ]
   } else {
     sources += [
@@ -1199,6 +1224,13 @@ component("skia") {
     ]
     libs += [ "dl" ]
   }
+
+ # if (is_winrt) {
+    sources -= [
+      get_path_info("src/utils/win/SkWGL.h", "abspath"),
+      get_path_info("src/utils/win/SkWGL_win.cpp", "abspath"),
+    ]
+ # }
 
   if (is_android) {
     deps += [ "//third_party/expat" ]
@@ -1741,7 +1773,7 @@ if (skia_enable_tools) {
         frameworks += [ "Foundation.framework" ]
       }
     } else if (is_win) {
-      libs += [ "DbgHelp.lib" ]
+      # libs += [ "DbgHelp.lib" ]
     }
 
     defines = []
