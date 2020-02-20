@@ -400,12 +400,14 @@ optional("fontmgr_win") {
   ]
 }
 
-optional("fontmgr_win_gdi") {
-  enabled = skia_enable_fontmgr_win_gdi
+# optional("fontmgr_win_gdi") {
+#   enabled = skia_enable_fontmgr_win_gdi
 
-  sources = [ "src/ports/SkFontHost_win.cpp" ]
-  libs = [ "Gdi32.lib" ]
-}
+#   sources = [
+#     "src/ports/SkFontHost_win.cpp",
+#   ]
+#   libs = [ "Gdi32.lib" ]
+# }
 
 if (skia_lex) {
   executable("sksllex") {
@@ -984,6 +986,13 @@ component("skia") {
     ]
     libs += [ "dl" ]
   }
+
+ # if (is_winrt) {
+    sources -= [
+      get_path_info("src/utils/win/SkWGL.h", "abspath"),
+      get_path_info("src/utils/win/SkWGL_win.cpp", "abspath"),
+    ]
+ # }
 
   if (is_android) {
     deps += [ "//third_party/expat" ]
