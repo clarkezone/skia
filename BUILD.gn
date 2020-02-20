@@ -869,7 +869,7 @@ component("skia") {
     ":fontmgr_fuchsia",
     ":fontmgr_wasm",
     ":fontmgr_win",
-    ":fontmgr_win_gdi",
+    #":fontmgr_win_gdi",
     ":gif",
     ":heif",
     ":hsw",
