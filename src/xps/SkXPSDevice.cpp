@@ -159,36 +159,38 @@ template <typename T> static constexpr size_t sk_digits_in() {
 HRESULT SkXPSDevice::createXpsThumbnail(IXpsOMPage* page,
                                         const unsigned int pageNum,
                                         IXpsOMImageResource** image) {
-    SkTScopedComPtr<IXpsOMThumbnailGenerator> thumbnailGenerator;
-    HRM(CoCreateInstance(
-            CLSID_XpsOMThumbnailGenerator,
-            nullptr,
-            CLSCTX_INPROC_SERVER,
-            IID_PPV_ARGS(&thumbnailGenerator)),
-        "Could not create thumbnail generator.");
+    // SkTScopedComPtr<IXpsOMThumbnailGenerator> thumbnailGenerator;
+    // HRM(CoCreateInstance(
+    //         CLSID_XpsOMThumbnailGenerator,
+    //         nullptr,
+    //         CLSCTX_INPROC_SERVER,
+    //         IID_PPV_ARGS(&thumbnailGenerator)),
+    //     "Could not create thumbnail generator.");
 
-    SkTScopedComPtr<IOpcPartUri> partUri;
-    constexpr size_t size = std::max(
-            SK_ARRAY_COUNT(L"/Documents/1/Metadata/.png") + sk_digits_in<decltype(pageNum)>(),
-            SK_ARRAY_COUNT(L"/Metadata/" L_GUID_ID L".png"));
-    wchar_t buffer[size];
-    if (pageNum > 0) {
-        swprintf_s(buffer, size, L"/Documents/1/Metadata/%u.png", pageNum);
-    } else {
-        wchar_t id[GUID_ID_LEN];
-        HR(this->createId(id, GUID_ID_LEN));
-        swprintf_s(buffer, size, L"/Metadata/%s.png", id);
-    }
-    HRM(this->fXpsFactory->CreatePartUri(buffer, &partUri),
-        "Could not create thumbnail part uri.");
+    // SkTScopedComPtr<IOpcPartUri> partUri;
+    // constexpr size_t size = std::max(
+    //         SK_ARRAY_COUNT(L"/Documents/1/Metadata/.png") + sk_digits_in<decltype(pageNum)>(),
+    //         SK_ARRAY_COUNT(L"/Metadata/" L_GUID_ID L".png"));
+    // wchar_t buffer[size];
+    // if (pageNum > 0) {
+    //     swprintf_s(buffer, size, L"/Documents/1/Metadata/%u.png", pageNum);
+    // } else {
+    //     wchar_t id[GUID_ID_LEN];
+    //     HR(this->createId(id, GUID_ID_LEN));
+    //     swprintf_s(buffer, size, L"/Metadata/%s.png", id);
+    // }
+    // HRM(this->fXpsFactory->CreatePartUri(buffer, &partUri),
+    //     "Could not create thumbnail part uri.");
 
-    HRM(thumbnailGenerator->GenerateThumbnail(page,
-                                              XPS_IMAGE_TYPE_PNG,
-                                              XPS_THUMBNAIL_SIZE_LARGE,
-                                              partUri.get(),
-                                              image),
-        "Could not generate thumbnail.");
+    // HRM(thumbnailGenerator->GenerateThumbnail(page,
+    //                                           XPS_IMAGE_TYPE_PNG,
+    //                                           XPS_THUMBNAIL_SIZE_LARGE,
+    //                                           partUri.get(),
+    //                                           image),
+    //     "Could not generate thumbnail.");
 
+    // return S_OK;
+    *image = nullptr;
     return S_OK;
 }
 
@@ -318,98 +320,99 @@ bool SkXPSDevice::endSheet() {
 }
 
 static HRESULT subset_typeface(const SkXPSDevice::TypefaceUse& current) {
-    //CreateFontPackage wants unsigned short.
-    //Microsoft, Y U NO stdint.h?
-    std::vector<unsigned short> keepList;
-    current.glyphsUsed.getSetValues([&keepList](unsigned v) {
-            keepList.push_back((unsigned short)v);
-    });
+    // //CreateFontPackage wants unsigned short.
+    // //Microsoft, Y U NO stdint.h?
+    // std::vector<unsigned short> keepList;
+    // current.glyphsUsed.getSetValues([&keepList](unsigned v) {
+    //         keepList.push_back((unsigned short)v);
+    // });
 
-    int ttcCount = (current.ttcIndex + 1);
+    // int ttcCount = (current.ttcIndex + 1);
 
-    //The following are declared with the types required by CreateFontPackage.
-    unsigned char *fontPackageBufferRaw = nullptr;
-    unsigned long fontPackageBufferSize;
-    unsigned long bytesWritten;
-    unsigned long result = CreateFontPackage(
-        (unsigned char *) current.fontData->getMemoryBase(),
-        (unsigned long) current.fontData->getLength(),
-        &fontPackageBufferRaw,
-        &fontPackageBufferSize,
-        &bytesWritten,
-        TTFCFP_FLAGS_SUBSET | TTFCFP_FLAGS_GLYPHLIST | (ttcCount > 0 ? TTFCFP_FLAGS_TTC : 0),
-        current.ttcIndex,
-        TTFCFP_SUBSET,
-        0,
-        0,
-        0,
-        keepList.data(),
-        SkTo<unsigned short>(keepList.size()),
-        sk_malloc_throw,
-        sk_realloc_throw,
-        sk_free,
-        nullptr);
-    SkAutoTMalloc<unsigned char> fontPackageBuffer(fontPackageBufferRaw);
-    if (result != NO_ERROR) {
-        SkDEBUGF("CreateFontPackage Error %lu", result);
-        return E_UNEXPECTED;
-    }
+    // //The following are declared with the types required by CreateFontPackage.
+    // unsigned char *fontPackageBufferRaw = nullptr;
+    // unsigned long fontPackageBufferSize;
+    // unsigned long bytesWritten;
+    // unsigned long result = CreateFontPackage(
+    //     (unsigned char *) current.fontData->getMemoryBase(),
+    //     (unsigned long) current.fontData->getLength(),
+    //     &fontPackageBufferRaw,
+    //     &fontPackageBufferSize,
+    //     &bytesWritten,
+    //     TTFCFP_FLAGS_SUBSET | TTFCFP_FLAGS_GLYPHLIST | (ttcCount > 0 ? TTFCFP_FLAGS_TTC : 0),
+    //     current.ttcIndex,
+    //     TTFCFP_SUBSET,
+    //     0,
+    //     0,
+    //     0,
+    //     keepList.data(),
+    //     SkTo<unsigned short>(keepList.size()),
+    //     sk_malloc_throw,
+    //     sk_realloc_throw,
+    //     sk_free,
+    //     nullptr);
+    // SkAutoTMalloc<unsigned char> fontPackageBuffer(fontPackageBufferRaw);
+    // if (result != NO_ERROR) {
+    //     SkDEBUGF("CreateFontPackage Error %lu", result);
+    //     return E_UNEXPECTED;
+    // }
 
-    // If it was originally a ttc, keep it a ttc.
-    // CreateFontPackage over-allocates, realloc usually decreases the size substantially.
-    size_t extra;
-    if (ttcCount > 0) {
-        // Create space for a ttc header.
-        extra = sizeof(SkTTCFHeader) + (ttcCount * sizeof(SK_OT_ULONG));
-        fontPackageBuffer.realloc(bytesWritten + extra);
-        //overlap is certain, use memmove
-        memmove(fontPackageBuffer.get() + extra, fontPackageBuffer.get(), bytesWritten);
+    // // If it was originally a ttc, keep it a ttc.
+    // // CreateFontPackage over-allocates, realloc usually decreases the size substantially.
+    // size_t extra;
+    // if (ttcCount > 0) {
+    //     // Create space for a ttc header.
+    //     extra = sizeof(SkTTCFHeader) + (ttcCount * sizeof(SK_OT_ULONG));
+    //     fontPackageBuffer.realloc(bytesWritten + extra);
+    //     //overlap is certain, use memmove
+    //     memmove(fontPackageBuffer.get() + extra, fontPackageBuffer.get(), bytesWritten);
 
-        // Write the ttc header.
-        SkTTCFHeader* ttcfHeader = reinterpret_cast<SkTTCFHeader*>(fontPackageBuffer.get());
-        ttcfHeader->ttcTag = SkTTCFHeader::TAG;
-        ttcfHeader->version = SkTTCFHeader::version_1;
-        ttcfHeader->numOffsets = SkEndian_SwapBE32(ttcCount);
-        SK_OT_ULONG* offsetPtr = SkTAfter<SK_OT_ULONG>(ttcfHeader);
-        for (int i = 0; i < ttcCount; ++i, ++offsetPtr) {
-            *offsetPtr = SkEndian_SwapBE32(SkToU32(extra));
-        }
+    //     // Write the ttc header.
+    //     SkTTCFHeader* ttcfHeader = reinterpret_cast<SkTTCFHeader*>(fontPackageBuffer.get());
+    //     ttcfHeader->ttcTag = SkTTCFHeader::TAG;
+    //     ttcfHeader->version = SkTTCFHeader::version_1;
+    //     ttcfHeader->numOffsets = SkEndian_SwapBE32(ttcCount);
+    //     SK_OT_ULONG* offsetPtr = SkTAfter<SK_OT_ULONG>(ttcfHeader);
+    //     for (int i = 0; i < ttcCount; ++i, ++offsetPtr) {
+    //         *offsetPtr = SkEndian_SwapBE32(SkToU32(extra));
+    //     }
 
-        // Fix up offsets in sfnt table entries.
-        SkSFNTHeader* sfntHeader = SkTAddOffset<SkSFNTHeader>(fontPackageBuffer.get(), extra);
-        int numTables = SkEndian_SwapBE16(sfntHeader->numTables);
-        SkSFNTHeader::TableDirectoryEntry* tableDirectory =
-            SkTAfter<SkSFNTHeader::TableDirectoryEntry>(sfntHeader);
-        for (int i = 0; i < numTables; ++i, ++tableDirectory) {
-            tableDirectory->offset = SkEndian_SwapBE32(
-                SkToU32(SkEndian_SwapBE32(SkToU32(tableDirectory->offset)) + extra));
-        }
-    } else {
-        extra = 0;
-        fontPackageBuffer.realloc(bytesWritten);
-    }
+    //     // Fix up offsets in sfnt table entries.
+    //     SkSFNTHeader* sfntHeader = SkTAddOffset<SkSFNTHeader>(fontPackageBuffer.get(), extra);
+    //     int numTables = SkEndian_SwapBE16(sfntHeader->numTables);
+    //     SkSFNTHeader::TableDirectoryEntry* tableDirectory =
+    //         SkTAfter<SkSFNTHeader::TableDirectoryEntry>(sfntHeader);
+    //     for (int i = 0; i < numTables; ++i, ++tableDirectory) {
+    //         tableDirectory->offset = SkEndian_SwapBE32(
+    //             SkToU32(SkEndian_SwapBE32(SkToU32(tableDirectory->offset)) + extra));
+    //     }
+    // } else {
+    //     extra = 0;
+    //     fontPackageBuffer.realloc(bytesWritten);
+    // }
 
-    std::unique_ptr<SkMemoryStream> newStream(new SkMemoryStream());
-    newStream->setMemoryOwned(fontPackageBuffer.release(), bytesWritten + extra);
+    // std::unique_ptr<SkMemoryStream> newStream(new SkMemoryStream());
+    // newStream->setMemoryOwned(fontPackageBuffer.release(), bytesWritten + extra);
 
-    SkTScopedComPtr<IStream> newIStream;
-    SkIStream::CreateFromSkStream(std::move(newStream), &newIStream);
+    // SkTScopedComPtr<IStream> newIStream;
+    // SkIStream::CreateFromSkStream(std::move(newStream), &newIStream);
 
-    XPS_FONT_EMBEDDING embedding;
-    HRM(current.xpsFont->GetEmbeddingOption(&embedding),
-        "Could not get embedding option from font.");
+    // XPS_FONT_EMBEDDING embedding;
+    // HRM(current.xpsFont->GetEmbeddingOption(&embedding),
+    //     "Could not get embedding option from font.");
 
-    SkTScopedComPtr<IOpcPartUri> partUri;
-    HRM(current.xpsFont->GetPartName(&partUri),
-        "Could not get part uri from font.");
+    // SkTScopedComPtr<IOpcPartUri> partUri;
+    // HRM(current.xpsFont->GetPartName(&partUri),
+    //     "Could not get part uri from font.");
 
-    HRM(current.xpsFont->SetContent(
-            newIStream.get(),
-            embedding,
-            partUri.get()),
-        "Could not set new stream for subsetted font.");
+    // HRM(current.xpsFont->SetContent(
+    //         newIStream.get(),
+    //         embedding,
+    //         partUri.get()),
+    //     "Could not set new stream for subsetted font.");
 
-    return S_OK;
+    // return S_OK;
+    return E_UNEXPECTED;
 }
 
 bool SkXPSDevice::endPortfolio() {
