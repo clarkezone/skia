@@ -534,6 +534,31 @@ optional("gpu") {
   }
 
   libs = []
+  if (is_android) {
+    sources += [ "src/gpu/gl/egl/GrGLMakeNativeInterface_egl.cpp" ]
+
+    # this lib is required to link against AHardwareBuffer
+    if (defined(ndk_api) && ndk_api >= 26) {
+      libs += [ "android" ]
+    }
+  } else if (skia_use_egl) {
+    sources += [ "src/gpu/gl/egl/GrGLMakeNativeInterface_egl.cpp" ]
+    libs += [ "EGL" ]
+  } else if (is_linux && skia_use_x11) {
+    sources += [ "src/gpu/gl/glx/GrGLMakeNativeInterface_glx.cpp" ]
+    libs += [ "GL" ]
+  } else if (is_mac) {
+    sources += [ "src/gpu/gl/mac/GrGLMakeNativeInterface_mac.cpp" ]
+  } else if (is_ios) {
+    sources += [ "src/gpu/gl/iOS/GrGLMakeNativeInterface_iOS.cpp" ]
+  # } else if (is_win) {
+  #   sources += [ "src/gpu/gl/win/GrGLMakeNativeInterface_win.cpp" ]
+  #   if (target_cpu != "arm64") {
+  #     libs += [ "OpenGL32.lib" ]
+  #   }
+  } else {
+    sources += [ "src/gpu/gl/GrGLMakeNativeInterface_none.cpp" ]
+  }
 
   if (skia_use_gl) {
     public_defines += [ "SK_GL" ]
