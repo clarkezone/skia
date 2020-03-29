@@ -586,11 +586,11 @@ optional("gpu") {
       sources += [ "src/gpu/gl/mac/GrGLMakeNativeInterface_mac.cpp" ]
     } else if (is_ios) {
       sources += [ "src/gpu/gl/iOS/GrGLMakeNativeInterface_iOS.cpp" ]
-    } else if (is_win) {
-      sources += [ "src/gpu/gl/win/GrGLMakeNativeInterface_win.cpp" ]
-      if (target_cpu != "arm64") {
-        libs += [ "OpenGL32.lib" ]
-      }
+    # } else if (is_win) {
+    #   sources += [ "src/gpu/gl/win/GrGLMakeNativeInterface_win.cpp" ]
+    #   if (target_cpu != "arm64") {
+    #     libs += [ "OpenGL32.lib" ]
+    #   }
     } else {
       sources += [ "src/gpu/gl/GrGLMakeNativeInterface_none.cpp" ]
     }
