@@ -556,8 +556,8 @@ optional("gpu") {
   #   if (target_cpu != "arm64") {
   #     libs += [ "OpenGL32.lib" ]
   #   }
-  } else {
-    sources += [ "src/gpu/gl/GrGLMakeNativeInterface_none.cpp" ]
+  # } else {
+  #   sources += [ "src/gpu/gl/GrGLMakeNativeInterface_none.cpp" ]
   }
 
   if (skia_use_gl) {
