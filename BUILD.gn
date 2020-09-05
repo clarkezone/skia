@@ -1112,7 +1112,7 @@ component("skia") {
     ":fontmgr_fuchsia",
     ":fontmgr_mac_ct",
     ":fontmgr_win",
-    ":fontmgr_win_gdi",
+    #":fontmgr_win_gdi",
     ":gpu",
     ":pdf",
     ":skcms",
