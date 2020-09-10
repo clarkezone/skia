@@ -1168,11 +1168,11 @@ component("skia") {
       "src/ports/SkOSLibrary_win.cpp",
     ]
     libs += [
-      "FontSub.lib",
+      #"FontSub.lib",
       "Ole32.lib",
       "OleAut32.lib",
-      "User32.lib",
-      "Usp10.lib",
+      #"User32.lib",
+      #"Usp10.lib",
     ]
   } else {
     sources += [
