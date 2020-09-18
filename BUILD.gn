@@ -1773,7 +1773,7 @@ if (skia_enable_tools) {
         frameworks += [ "Foundation.framework" ]
       }
     } else if (is_win) {
-      libs += [ "DbgHelp.lib" ]
+      # libs += [ "DbgHelp.lib" ]
     }
 
     defines = []
